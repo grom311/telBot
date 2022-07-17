@@ -1,15 +1,17 @@
-# main.py
+# app.py
 from fastapi import Request
 from fastapi import APIRouter
 import httpx
 import telebot
+from .setting import (
+    TOKEN,
+    URL,
+    CHAT_ID
+)
 
 
 router = APIRouter()
 # https://api.telegram.org/bot5449976483:AAH6_qytNGxw9CrXJ_SoShpgAo-80emNFIM/getUpdates
-TOKEN = "5449976483:AAH6_qytNGxw9CrXJ_SoShpgAo-80emNFIM"  # Telegram Bot API Key
-CHAT_ID = '800601219'  # Telegram Chat ID
-URL = 'https://b7dd-178-127-235-232.ngrok.io'
 bot = telebot.TeleBot(TOKEN)
 
 
@@ -19,30 +21,20 @@ async def set_webhook():
     # in the link provided by URL
     # s = bot.set_webhook('{URL}{HOOK}'.format(URL=URL, HOOK=token))
 
-    s = bot.set_webhook('{URL}/hook'.format(URL=URL))
+    s = bot.set_webhook(f'{URL}/hook')
     # something to let us know things work
     if s:
         return "webhook setup ok"
     else:
         return "webhook setup failed"
 
-async def sendTgMessage(message: str):
-    """
-    Sends the Message to telegram with the Telegram BOT API
-    """
-    print(message)
-    tg_msg = {"chat_id": CHAT_ID, "text": message, "parse_mode": "Markdown"}
-    API_URL = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-    print(f"API url: {API_URL}")
-    async with httpx.AsyncClient() as client:
-        res = await client.post(API_URL, json=tg_msg)
-        print(f"res : {res.json()}")
 
 @router.post("/hook")
 async def recWebHook(req: Request):
     """
     Receive the Webhook and process the Webhook Payload to get relevant data
     Refer https://developer.github.com/webhooks/event-payloads for all GitHub Webhook Events and Payloads
+    Work for local API with ngrok
     """
     body = await req.json()
     print(body)
@@ -67,7 +59,19 @@ async def recWebHook(req: Request):
         pr_url = body["pull_request"]["html_url"]
         message = f"Pull Request([{pr_number}]({pr_url})) {pr_action} by [{pr_login}]({pr_login_url}).\n\n Title: {pr_title} \n\n Description: {pr_desc}"
         await sendTgMessage(message)
-    elif event == "стоп":
+    elif body['message']['text'] == "стоп":
         await sendTgMessage('ок стоп')
     else:
         await sendTgMessage('я не знаю кто ты')
+
+
+async def sendTgMessage(message: str):
+    """
+    Sends the Message to telegram with the Telegram BOT API
+    """
+    print(message)
+    tg_msg = {"chat_id": CHAT_ID, "text": message, "parse_mode": "Markdown"}
+    API_URL = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+    async with httpx.AsyncClient() as client:
+        res = await client.post(API_URL, json=tg_msg)
+        print(f"res : {res.json()}")
