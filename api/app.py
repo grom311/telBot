@@ -11,7 +11,6 @@ from .setting import (
 
 
 router = APIRouter()
-# https://api.telegram.org/bot5449976483:AAH6_qytNGxw9CrXJ_SoShpgAo-80emNFIM/getUpdates
 bot = telebot.TeleBot(TOKEN)
 
 
@@ -30,7 +29,7 @@ async def set_webhook():
 
 
 @router.post("/hook")
-async def recWebHook(req: Request):
+async def req_webhook(req: Request):
     """
     Receive the Webhook and process the Webhook Payload to get relevant data
     Refer https://developer.github.com/webhooks/event-payloads for all GitHub Webhook Events and Payloads
@@ -46,7 +45,7 @@ async def recWebHook(req: Request):
         repo_url = body["repository"]["html_url"]
         repo_name = body["repository"]["name"]
         message = f"{starrer_username} has starred the [{repo_name}]({repo_url}). \n\n The Total Stars are {nos_stars}"
-        await sendTgMessage(message)
+        await send_tg_message(message)
     elif event == "pull_request":  # check if event is a pull request
         pr_number = body["number"]
         if body["pull_request"]["merged"] == True:
@@ -58,14 +57,14 @@ async def recWebHook(req: Request):
         pr_login_url = body["sender"]["html_url"]
         pr_url = body["pull_request"]["html_url"]
         message = f"Pull Request([{pr_number}]({pr_url})) {pr_action} by [{pr_login}]({pr_login_url}).\n\n Title: {pr_title} \n\n Description: {pr_desc}"
-        await sendTgMessage(message)
+        await send_tg_message(message)
     elif body['message']['text'] == "стоп":
-        await sendTgMessage('ок стоп')
+        await send_tg_message('ок стоп')
     else:
-        await sendTgMessage('я не знаю кто ты')
+        await send_tg_message('я не знаю кто ты')
 
 
-async def sendTgMessage(message: str):
+async def send_tg_message(message: str):
     """
     Sends the Message to telegram with the Telegram BOT API
     """
