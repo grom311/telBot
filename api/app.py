@@ -25,6 +25,18 @@ async def set_webhook():
     else:
         return "webhook setup failed"
 
+@router.api_route("/delete_webhook", methods=["DELETE"])
+async def delet_webhook():
+    # we use the bot object to link the bot to our app which live
+    # in the link provided by URL
+    # s = bot.set_webhook('{URL}{HOOK}'.format(URL=URL, HOOK=token))
+
+    s = bot.delete_webhook(f"{URL}/hook")
+    # something to let us know things work
+    if s:
+        return "webhook setup ok"
+    else:
+        return "webhook setup failed"
 
 first = [
     "Сегодня — идеальный день для новых начинаний.",
@@ -99,7 +111,7 @@ async def req_webhook(req: Request):
     elif body.get("callback_query") and body["callback_query"]["data"] == "All":
         ret = await get_exchange()
         await send_tg_message(ret)
-    elif body["message"]["text"] == "exchange":
+    elif body.get("message") and body["message"]["text"] == "exchange":
         # bot.send_message(CHAT_ID, "I am finding exchange!")
         keyboard = types.InlineKeyboardMarkup()
         exchange = types.InlineKeyboardButton(text="USD", callback_data="USD")
@@ -110,7 +122,7 @@ async def req_webhook(req: Request):
         keyboard.add(exchange)
         bot.send_message(CHAT_ID, text="Choose currency", reply_markup=keyboard)
 
-    elif body["message"]["text"] == "hi":
+    elif body.get("message") and body["message"]["text"] == "hi":
         bot.send_message(CHAT_ID, "Hello, now I will tell you the horoscope for today.")
         # Готовим кнопки
         keyboard = types.InlineKeyboardMarkup()
@@ -141,9 +153,9 @@ async def req_webhook(req: Request):
         key_zodiac = types.InlineKeyboardButton(text="Рыбы", callback_data="zodiac")
         keyboard.add(key_zodiac)
         bot.send_message(CHAT_ID, text="Choose your zodiac sign", reply_markup=keyboard)
-    elif body["message"]["text"] == "stop":
+    elif body.get("message") and body["message"]["text"] == "stop":
         await send_tg_message("stop Bot!")
-    elif body["message"]["text"] == "/help":
+    elif body.get("message") and body["message"]["text"] == "/help":
         await send_tg_message(f"Exists commands:\n hi, stop, exchange")
     else:
         await send_tg_message("I do not know who you are.")

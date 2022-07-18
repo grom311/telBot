@@ -15,3 +15,7 @@ Env Variables:
 TOKEN = ""  
 CHAT_ID = ""  
 URL = ""  
+
+# telBot
+bot.py  
+simple bot without webhook
