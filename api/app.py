@@ -10,34 +10,6 @@ from .setting import CHAT_ID, TOKEN, URL
 
 router = APIRouter()
 bot = telebot.TeleBot(TOKEN)
-
-
-@router.api_route("/setwebhook", methods=["GET", "POST"])
-async def set_webhook():
-    # we use the bot object to link the bot to our app which live
-    # in the link provided by URL
-    # s = bot.set_webhook('{URL}{HOOK}'.format(URL=URL, HOOK=token))
-
-    s = bot.set_webhook(f"{URL}/hook")
-    # something to let us know things work
-    if s:
-        return "webhook setup ok"
-    else:
-        return "webhook setup failed"
-
-@router.api_route("/delete_webhook", methods=["DELETE"])
-async def delet_webhook():
-    # we use the bot object to link the bot to our app which live
-    # in the link provided by URL
-    # s = bot.set_webhook('{URL}{HOOK}'.format(URL=URL, HOOK=token))
-
-    s = bot.delete_webhook(f"{URL}/hook")
-    # something to let us know things work
-    if s:
-        return "webhook setup ok"
-    else:
-        return "webhook setup failed"
-
 first = [
     "Сегодня — идеальный день для новых начинаний.",
     "Оптимальный день для того, чтобы решиться на смелый поступок!",
@@ -66,6 +38,31 @@ third = [
     "Не нужно бояться одиноких встреч — сегодня то самое время, когда они значат многое.",
     "Если встретите незнакомца на пути — проявите участие, и тогда эта встреча посулит вам приятные хлопоты.",
 ]
+
+
+@router.api_route("/setwebhook", methods=["GET", "POST"])
+async def set_webhook(request: Request) -> str:
+    # we use the bot object to link the bot to our app which live
+    # in the link provided by URL
+    # s = bot.set_webhook('{URL}{HOOK}'.format(URL=URL, HOOK=token))
+
+    s = bot.set_webhook(f"{URL}/hook")
+    # something to let us know things work
+    if s:
+        return "webhook setup ok"
+    return "webhook setup failed"
+
+@router.api_route("/delete_webhook", methods=["DELETE"])
+async def delet_webhook() -> str:
+    # we use the bot object to link the bot to our app which live
+    # in the link provided by URL
+    # s = bot.set_webhook('{URL}{HOOK}'.format(URL=URL, HOOK=token))
+
+    s = bot.delete_webhook(f"{URL}/hook")
+    # something to let us know things work
+    if s:
+        return "webhook setup ok"
+    return "webhook setup failed"
 
 
 @router.post("/hook")
@@ -161,7 +158,7 @@ async def req_webhook(req: Request):
         await send_tg_message("I do not know who you are.")
 
 
-async def send_tg_message(message: str):
+async def send_tg_message(message: str) -> None:
     """
     Sends the Message to telegram with the Telegram BOT API.
     """
@@ -173,7 +170,7 @@ async def send_tg_message(message: str):
         # print(f"res : {res.json()}")
 
 
-async def get_exchange():
+async def get_exchange() -> dict:
     """
     Get information about exchange rates from nbrb.by API.
     """
