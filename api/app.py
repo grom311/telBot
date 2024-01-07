@@ -48,9 +48,7 @@ async def set_webhook(request: Request) -> str:
 
     s = bot.set_webhook(f"{URL}/hook")
     # something to let us know things work
-    if s:
-        return "webhook setup ok"
-    return "webhook setup failed"
+    return "webhook setup ok" if s else "webhook setup failed"
 
 @router.api_route("/delete_webhook", methods=["DELETE"])
 async def delet_webhook() -> str:
@@ -60,9 +58,7 @@ async def delet_webhook() -> str:
 
     s = bot.delete_webhook(f"{URL}/hook")
     # something to let us know things work
-    if s:
-        return "webhook setup ok"
-    return "webhook setup failed"
+    return "webhook setup ok" if s else "webhook setup failed"
 
 
 @router.post("/hook")
