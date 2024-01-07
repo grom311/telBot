@@ -171,7 +171,7 @@ async def get_exchange() -> dict:
     Get information about exchange rates from nbrb.by API.
     """
     ret_json = {}
-    API_URL = f"https://www.nbrb.by/api/exrates/rates?periodicity=0"
+    API_URL = "https://www.nbrb.by/api/exrates/rates?periodicity=0"
     async with httpx.AsyncClient() as client:
         res = await client.get(API_URL)
         for i in res.json():
